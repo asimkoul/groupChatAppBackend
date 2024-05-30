@@ -40,26 +40,43 @@ exports.login=async (req,res,next)=>{
     try {
         const {email,password}=req.body
         if(isStringValid(email) || isStringValid(password)){
+            
             return res.status(400).json({err:`please complete all the input fields`})
         }
-        const User=await user.findAll({where:{email}})
-            if(User.length>0){
-                bcrypt.compare(password,User[0].password,(err,result)=>{
-                    if(err){
-                        throw new Error('Something went wrong')
-                    }
-                    if(result==true){
-                        res.status(200).json({success:true, message:'User logged in successfully',token:generateAccessToken(User[0].id)})
-                    }
-                    else{
-                        return res.status(400).json({success:false, message:'Password is incorrect'})
-                    }
-                })
-            }else{
-                return res.status(404).json({success:false, message:'User does not exist'})
-            }
-    } catch (error) {
-        res.status(500).json({message:error,success:false})
+        const User=await user.findOne({where:{email}})
+        if(!User){
+            return res.status(404).json({ error: "User not found, Please Signup" });
+        }
+        const isPasswordValid = await bcrypt.compare(password, User.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: "Invalid password, Please Try Again" });
+        }
+        User.loggedIn = true;
+        await User.save();
+        // await t.commit();
+        const token = generateAccessToken(User.id);
+        console.log(token);
+        res.status(200).send({ message: "User successfully Logged In", token});    
+    }
+    catch(error){
         console.log(error)
     }
 }
+exports.getOnlineUsers = async (req, res, next) => {
+    try {
+        const users = await user.findAll({ where: { loggedIn: true } });
+        const names = users.map(user => {
+            if (req.user.name == user.name) {
+                return `You`;
+            }
+            else {
+                return user.name;
+            }
+        });
+        res.status(200).json({ message: names });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ error:err  });
+    }
+  }

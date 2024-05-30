@@ -19,6 +19,11 @@ const User= sequelize.define('user',{
     password:{
         type:Sequelize.STRING,
         allowNull:false
+    },
+    loggedIn: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
     }
+
 })
 module.exports=User

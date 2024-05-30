@@ -10,7 +10,7 @@ async function login(event) {
             alert(response.data.message)
             console.log(response.data);
             localStorage.setItem('token',response.data.token)
-             window.location.href="/"
+             window.location.href="../message/message.html"
         } 
     } catch (error) {
         console.log(error)
