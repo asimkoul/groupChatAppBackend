@@ -1,18 +1,18 @@
 const form = document.querySelector("form");
 const token = localStorage.getItem("token");
 
-// form.addEventListener("submit", async (e) => {
-//     try {
-//         e.preventDefault();
-//         const message = e.target.message.value;
-//         await axios.post("http://localhost:3000/", { message }, { headers: { "Authorization": token } });
-//         document.location.reload();
-//     }
+form.addEventListener("submit", async (e) => {
+    try {
+        e.preventDefault();
+        const message = e.target.message.value;
+        await axios.post("http://localhost:3000/message/", { message }, { headers: { "Authorization": token } });
+        document.location.reload();
+    }
 
-//     catch (err) {
-//         console.error(err);
-//     }
-// });
+    catch (err) {
+        console.error(err);
+    }
+});
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
