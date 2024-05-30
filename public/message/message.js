@@ -27,10 +27,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         onlineUsers.data.message.forEach((user) => {
             pre.innerHTML += `${user} joined\n`;
         });
-        // const messages = await axios.get("http://localhost:3000/all", { headers: { "Authorization": token } });
-        // messages.data.message.forEach((message) => {
-        //     pre.innerHTML += `${message.sender}: ${message.message}\n`;
-        // });
+        const messages = await axios.get("http://localhost:3000/message/allMessages", { headers: { "Authorization": token } });
+        messages.data.message.forEach((message) => {
+            pre.innerHTML += `${message.sender}: ${message.message}\n`;
+        });
     }
     catch (err) {
         console.error(err);

@@ -5,6 +5,6 @@ const router = express.Router();
 router.use(express.json());
 
 router.post('/',userauthentication.authenticate, messageController.postMessages);
-router.get('/all', userauthentication.authenticate,messageController.getAllMessages);
+router.get('/allMessages', userauthentication.authenticate,messageController.getAllMessages);
 
 module.exports = router;
