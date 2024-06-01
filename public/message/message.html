@@ -8,17 +8,29 @@
 
 
 <body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="../group/groups.html">Groups</a></li>
+                <li><a class="active" href="message.html">Global Messages</a></li>
+                <li><a href="../Signup/signup.html">SignUp Page</a></li>
+                <li><a href="../Login/login.html">Login Page</a></li>
+            </ul>
+        </nav>
+    </header>
+
     <div id="message-div">
         <form id="message-form">
-            <pre id="online-users"></pre>
-            <pre id="all-messages"></pre>
-            <label for="message">Message: </label>
+            <label for="online-users">Online Users:</label>
+            <pre id="online-users" name="online-users"></pre>
+            <label for="messages">Messages:</label>
+            <pre id="all-messages" name="messages"></pre>
+            <label for="message">Enter Message : </label>
             <input id="message" name="message" type="text" required>
             <br><br>
             <button type="submit">Send Message</button>
         </form>
     </div>
-
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
 <script src="./message.js"></script>

@@ -30,7 +30,7 @@ exports.getAllMessages = async (req, res, next) => {
         });
         res.status(200).json({ message: messages });
     } catch (err) {
-        console.error(err.errors[0].message);
-        res.status(500).json({ error: err.errors[0].message });
+        console.error(err);
+        res.status(500).json({ error: err });
     }
 } 

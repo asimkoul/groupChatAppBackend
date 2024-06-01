@@ -1,6 +1,7 @@
 const user=require('../models/user')
 const bcrypt = require('bcrypt')
 const jwt=require('jsonwebtoken')
+const sequelize = require('../util/database')
 
 function isStringValid(string) {
     if(string==undefined || string.length==0){
@@ -80,3 +81,18 @@ exports.getOnlineUsers = async (req, res, next) => {
         res.status(500).json({ error:err  });
     }
   }
+
+  exports.setOfflineUser = async (req, res, next) => {
+    const t = await sequelize.transaction();
+    try {
+        req.user.loggedIn = false;
+        await req.user.save();
+        await t.commit();
+        res.status(200).json({ message: "User is offline" });
+    } catch (err) {
+        await t.rollback();
+        console.error(err.errors[0].message);
+        res.status(500).json({ error: err.errors[0].message });
+    }
+  }
+  
