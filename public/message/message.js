@@ -12,21 +12,32 @@ function arraysEqual(arr1, arr2) {
 }
 
 async function fetchAllMessages() {
-    const pre = document.querySelector("pre");
+    const onlineUsersList = document.getElementById("online-users");
+    const messagesList = document.getElementById("all-messages");
     try {
-        const response = await axios.get("http://localhost:3000/message/allMessages", { headers: { "Authorization": token } });
-        const newMessages = response.data.message;
-        if (!arraysEqual(previousMessages, newMessages)) {
-            let content = '';
-            const onlineUsersResponse = await axios.get("http://localhost:3000/user/online-users", { headers: { "Authorization": token } });
-            const onlineUsers = onlineUsersResponse.data.message.map(user => `${user} joined`).join('\n');
-            content += onlineUsers + '\n';
-            newMessages.forEach((message) => {
-                content += `${message.sender}: ${message.message}\n`;
+        const p1 = await axios.get("http://localhost:3000/message/allMessages", { headers: { "Authorization": token } });
+        const p2 = await axios.get("http://localhost:3000/user/online-users", { headers: { "Authorization": token } });
+        const [allMessagesResponse, onlineUsersResponse] = await Promise.all([p1, p2]);
+        const newMessages = allMessagesResponse.data.message;
+        const onlineUsers = onlineUsersResponse.data.message.map(user => `${user} joined`).join('\n');
+        onlineUsersList.textContent = onlineUsers;
+        const storedMessages = localStorage.getItem("messages");
+        const allMessages = [...newMessages];
+        const last10Messages = allMessages.slice(-10);
+        let messageContent = '';
+        if (storedMessages) {
+            JSON.parse(storedMessages).forEach((message) => {
+                messageContent += `${message.sender}: ${message.message}\n`;
             });
-            pre.innerHTML = content;
-            previousMessages = newMessages.slice();
         }
+        else {
+            last10Messages.forEach((message) => {
+                messageContent += `${message.sender}: ${message.message}\n`;
+            });
+        }
+        messagesList.textContent = messageContent;
+        localStorage.setItem("messages", JSON.stringify(last10Messages));
+
     } catch (error) {
         console.error("Error fetching messages:", error);
     }
@@ -52,20 +63,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             alert("You are not logged in!");
             document.location.href = "login.html";
         };
-    //     const pre = document.querySelector("pre");
-    //     pre.innerHTML = "";
-    //     const onlineUsers = await axios.get("http://localhost:3000/user/online-users", { headers: { "Authorization": token } });
-    //     console.log(onlineUsers.data.message)
-    //     onlineUsers.data.message.forEach((user) => {
-    //         pre.innerHTML += `${user} joined\n`;
-    //     });
-    //     const messages = await axios.get("http://localhost:3000/message/allMessages", { headers: { "Authorization": token } });
-    //     messages.data.message.forEach((message) => {
-    //         pre.innerHTML += `${message.sender}: ${message.message}\n`;
-    //     });
     fetchAllMessages();
     setInterval(fetchAllMessages, 1000);
-
      }
     catch (err) {
         console.error(err);
