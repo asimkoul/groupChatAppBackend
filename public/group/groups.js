@@ -20,6 +20,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
+document.getElementById("create-group-btn").addEventListener("click", () => {
+    document.getElementById("createGroupDialog").classList.add("active");
+});
+
 
 document.getElementById("close").addEventListener("click", () => {
     document.getElementById("createGroupDialog").classList.remove("active");
@@ -43,10 +47,9 @@ async function singleGroup(id, name) {
 }
 
 document.getElementById("createGroupForm").addEventListener("submit", async (e) => {
-    console.log('bbbbbbbb')
     e.preventDefault();
     const groupName = document.getElementById("groupName").value;
-    const members = document.getElementById("members").value;
+    const members = document.getElementById("membersInput").value;
     let membersArray = members.split(",");
     try {
         if (!token) {
@@ -55,7 +58,6 @@ document.getElementById("createGroupForm").addEventListener("submit", async (e) 
         }
         else {
             await axios.post("http://localhost:3000/create-group", { name: groupName, members: membersArray }, { headers: { "Authorization": token } });
-            console.log('aaaaaaaaaaaaaaaaaa')
             window.location.reload();
         }
     }

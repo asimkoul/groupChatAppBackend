@@ -33,6 +33,8 @@ Messages.belongsTo(Group);
 
 
 sequelize.sync()
+// sequelize.sync({force:true})
+
 .then(result=>{
     app.listen(3000,()=>{
         console.log('server started')

@@ -14,4 +14,14 @@ router.post("/send-group-message/:groupId", userauthentication.authenticate, gro
 
 router.post("/create-group", userauthentication.authenticate, groupController.createGroup);
 
+router.delete("/delete-group/:groupId", userauthentication.authenticate, groupController.deleteGroup);
+
+router.put("/edit-group/:groupId", userauthentication.authenticate, groupController.editGroup);
+
+router.delete("/delete-member/:groupId/:userId", userauthentication.authenticate, groupController.deleteMember);
+
+router.put("/make-admin/:groupId/:userId", userauthentication.authenticate, groupController.makeAdmin);
+
+
+
 module.exports = router;

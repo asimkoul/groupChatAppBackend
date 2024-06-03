@@ -62,7 +62,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!token) {
             alert("You are not logged in!");
             document.location.href = "login.html";
-        };
+        }
+        else{
+            await axios.post("http://localhost:3000/user/set-online", {}, { headers: { "Authorization": token } });
+
+        }
     fetchAllMessages();
     setInterval(fetchAllMessages, 1000);
      }

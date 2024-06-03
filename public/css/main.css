@@ -1,0 +1,54 @@
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: rgb(102, 148, 9);
+    display: flex;
+  }
+  
+  nav ul li a {
+    display: block;
+    color: rgb(216, 216, 216);
+    text-align: center;
+    padding: 14px 16px;
+  }
+  
+  /* Change the color of links on hover */
+  nav ul li a:hover {
+    background-color: #bef117;
+    color: rgb(92, 27, 189);
+  }
+  
+  #signup-div {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 200px;
+    margin: 0 auto; /* Ensure horizontal centering */
+    border: 2px solid black;
+    padding: 20px; /* Add padding for better appearance */
+    background-color: rgb(221, 216, 201);
+  }
+  
+  #signup-div input {
+    border: 1.5px solid rgb(211, 18, 147);
+  }
+  
+  #login-div {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px; /* Set the width */
+    height: 200px; /* Set the height */
+    margin: 0 auto; /* Ensure horizontal centering */
+    border: 2px solid black;
+    padding: 20px; /* Add padding for better appearance */
+    background-color: rgba(204, 207, 203, 0.747);
+  }
+  
+  #login-div input {
+    border: 1.5px solid rgb(211, 18, 147);
+  }
