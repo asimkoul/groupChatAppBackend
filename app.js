@@ -1,6 +1,7 @@
 const express=require('express')
 const dotenv=require('dotenv')
 dotenv.config()
+const path=require('path')
 const cors=require('cors')
 const bodyParser=require('body-parser')
 const sequelize=require('./util/database')
@@ -25,6 +26,9 @@ credentials: true
 app.use('/message',messageRoutes)
 app.use('/user',userRoutes)
 app.use(groups)
+app.use((req,res)=>{
+    res.sendFile(path.join(__dirname,`public/${req.url}`))
+})
 
 User.hasMany(Messages);
 Messages.belongsTo(User);

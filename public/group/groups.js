@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         else {
             const groupList = document.getElementById("group-list");
-            const allGroups = await axios.get("http://localhost:3000/get-all-groups", { headers: { "Authorization": token } });
+            const allGroups = await axios.get("http://3.110.172.188:3000/get-all-groups", { headers: { "Authorization": token } });
             allGroups.data.message.forEach(group => {
                 groupList.innerHTML += `<button type="button" id=${group.id} onclick="singleGroup(${group.id}, '${group.name}')">${group.name}</button>`;
             });
@@ -57,7 +57,7 @@ document.getElementById("createGroupForm").addEventListener("submit", async (e) 
             document.location.href = "login.html";
         }
         else {
-            await axios.post("http://localhost:3000/create-group", { name: groupName, members: membersArray }, { headers: { "Authorization": token } });
+            await axios.post("http://3.110.172.188:3000/create-group", { name: groupName, members: membersArray }, { headers: { "Authorization": token } });
             window.location.reload();
         }
     }

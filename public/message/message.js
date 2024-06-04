@@ -15,8 +15,8 @@ async function fetchAllMessages() {
     const onlineUsersList = document.getElementById("online-users");
     const messagesList = document.getElementById("all-messages");
     try {
-        const p1 = await axios.get("http://localhost:3000/message/allMessages", { headers: { "Authorization": token } });
-        const p2 = await axios.get("http://localhost:3000/user/online-users", { headers: { "Authorization": token } });
+        const p1 = await axios.get("http://3.110.172.188:3000/message/allMessages", { headers: { "Authorization": token } });
+        const p2 = await axios.get("http://3.110.172.188:3000/user/online-users", { headers: { "Authorization": token } });
         const [allMessagesResponse, onlineUsersResponse] = await Promise.all([p1, p2]);
         const newMessages = allMessagesResponse.data.message;
         const onlineUsers = onlineUsersResponse.data.message.map(user => `${user} joined`).join('\n');
@@ -48,7 +48,7 @@ form.addEventListener("submit", async (e) => {
     try {
         e.preventDefault();
         const message = e.target.message.value;
-        await axios.post("http://localhost:3000/message/", { message }, { headers: { "Authorization": token } });
+        await axios.post("http://3.110.172.188:3000/message/", { message }, { headers: { "Authorization": token } });
         document.location.reload();
     }
 
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.location.href = "login.html";
         }
         else{
-            await axios.post("http://localhost:3000/user/set-online", {}, { headers: { "Authorization": token } });
+            await axios.post("http://3.110.172.188:3000/user/set-online", {}, { headers: { "Authorization": token } });
 
         }
     fetchAllMessages();
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 window.addEventListener('beforeunload', setOfflineUser);
 async function setOfflineUser(e) {
     try {
-        await axios.post("http://localhost:3000/user/set-offline",{}, { headers: { "Authorization": token } });
+        await axios.post("http://3.110.172.188:3000/user/set-offline",{}, { headers: { "Authorization": token } });
     } catch (error) {
         alert("Error sending offline status:", error);
     }
