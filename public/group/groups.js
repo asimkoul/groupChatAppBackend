@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
         if (!token) {
             alert("You are not logged in!");
-            document.location.href = "login.html";
+            document.location.href = "../Login/login.html";
         }
         else {
             const groupList = document.getElementById("group-list");
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     catch (err) {
         alert(err.response.data.error);
-        window.location.href = "login.html";
+        window.location.href = "../Login/login.html";
     }
 });
 
@@ -33,7 +33,7 @@ async function singleGroup(id, name) {
     try {
         if (!token) {
             alert("You are not logged in!");
-            document.location.href = "login.html";
+            document.location.href = "../Login/login.html";
         }
         else {
             localStorage.setItem("groupId", id);
@@ -54,7 +54,7 @@ document.getElementById("createGroupForm").addEventListener("submit", async (e) 
     try {
         if (!token) {
             alert("You are not logged in!");
-            document.location.href = "login.html";
+            document.location.href = "../Login/login.html";
         }
         else {
             await axios.post("http://3.110.172.188:3000/create-group", { name: groupName, members: membersArray }, { headers: { "Authorization": token } });

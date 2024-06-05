@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
         if (!token) {
             alert("You are not logged in!");
-            document.location.href = "login.html";
+            document.location.href = "../Login/login.html";
         }
         else{
             await axios.post("http://3.110.172.188:3000/user/set-online", {}, { headers: { "Authorization": token } });
