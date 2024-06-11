@@ -2,70 +2,116 @@ const form = document.querySelector("form");
 const token = localStorage.getItem("token");
 const groupId = localStorage.getItem("groupId");
 const groupName = localStorage.getItem("groupName");
-
-async function fetchAllMessages() {
-    const memberList = document.getElementById("members");
-    const messagesList = document.getElementById("all-messages");
-    try {
-        const p1 = axios.get(`http://3.110.172.188:3000/get-all-messages/${groupId}`, { headers: { "Authorization": token } });
-        const p2 = axios.get(`http://3.110.172.188:3000/get-all-members/${groupId}`, { headers: { "Authorization": token } });
-        const [allMessagesResponse, membersResponse] = await Promise.all([p1, p2]);
-        const newMessages = allMessagesResponse.data.message;
-        const allMembers = Object.entries(membersResponse.data.message).map(([id, member]) => 
-            `<li onclick="showOptions(${id})" id="${id}">${member}</li>`).join('');
-        memberList.innerHTML = allMembers;
-        const storedMessages = localStorage.getItem("messages");
-        const allMessages = [...newMessages];
-        const last10Messages = allMessages.slice(-10);
-        let messageContent = '';
-        if (storedMessages) {
-            JSON.parse(storedMessages).forEach((message) => {
-                messageContent += `${message.sender}: ${message.message}\n`;
-            });
-        }
-        else {
-            last10Messages.forEach((message) => {
-                messageContent += `${message.sender}: ${message.message}\n`;
-            });
-        }
-        messagesList.textContent = messageContent;
-        localStorage.setItem("messages", JSON.stringify(last10Messages));
-    } catch (error) {
-        console.error("Error fetching messages:", error);
-    }
-}
+const socket = io({ auth: { token: token } });
+const messagesList = document.getElementById("all-messages");
+const navBar = document.getElementById("nav-bar");
 
 form.addEventListener("submit", async (e) => {
+    e.preventDefault();
     try {
-        e.preventDefault();
         const message = e.target.message.value;
-        await axios.post(`http://3.110.172.188:3000/send-group-message/${groupId}`, { message }, { headers: { "Authorization": token } });
-        document.location.reload();
+        socket.emit("post-group-message", message);
+        e.target.message.value = "";
+        const li = document.createElement("li");
+        li.innerText = "You" + ": " + message;
+        messagesList.appendChild(li);
+        messagesList.scrollTop = messagesList.scrollHeight;
+        if (messagesList.children.length > 10)
+            messagesList.firstChild.remove();
     }
     catch (err) {
-        console.error(err);
+        console.log(err);
     }
+});
+socket.on("not-member", () => {
+    alert("You are not part of this group!");
+    window.location.href = "/";
+});
+
+socket.on("auth-error", () => {
+    alert("Authentication error: You are not logged in!");
+    window.location.href = "../Login/login.html";
+});
+
+socket.emit("get-group-members", groupId);
+
+socket.on("group-members", (idAndNames, admin, emails) => {
+    console.log(admin)
+    const memberList = document.getElementById("members");
+    try {
+        const allMembers = Object.entries(idAndNames).map(([id, member]) => {
+            return `<li onclick="showOptions(${id})" id="${id}">${member}</li>`;
+        }).join('');
+        if (admin) {
+            const button = document.createElement("button");
+            button.textContent = "Edit Group Settings";
+            button.type = "button";
+            button.id = "edit-group-settings";
+            button.onclick = () => {
+                document.getElementById("editGroupDialog").classList.add("active");
+                const form = document.getElementById("editGroupForm");
+                const groupName = document.getElementById("groupName");
+                const allMembers = document.getElementById("allMembers");
+                groupName.value = localStorage.getItem("groupName");
+                allMembers.value = emails;
+                form.addEventListener("submit", async (e) => {
+                    e.preventDefault();
+                    const newGroupName = e.target.groupName.value;
+                    const newMembers = e.target.allMembers.value.split(",");
+                    try {
+                        await axios.put(`http://localhost:3000/edit-group/${groupId}`, { name: newGroupName, members: newMembers }, { headers: { "Authorization": token } });
+                        localStorage.setItem("groupName", newGroupName); 
+                        window.location.href = "singlegroup.html";
+                    } catch (err) {
+                        alert(err.response.data.error);
+                    }
+                });
+            }
+            navBar.appendChild(button);
+        }
+        memberList.innerHTML = allMembers;
+    }
+    catch (err) {
+        console.log(err);
+    }
+})
+
+
+function addMessageToList(message) {
+    const li = document.createElement("li");
+    li.innerText = message.sender + ": " + message.message;
+    messagesList.appendChild(li);
+    messagesList.scrollTop = messagesList.scrollHeight;
+}
+
+socket.on("post-group-message", (message) => {
+    addMessageToList(message);
+    if (messagesList.children.length > 10)
+        messagesList.firstChild.remove();
+});
+
+socket.on("get-group-messages", (allMessages) => {
+    messagesList.innerHTML = "";
+    allMessages.forEach((message) => {
+        addMessageToList(message);
+    });
 });
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const navBar = document.getElementById("nav-bar");
-    const groupNameElement = document.getElementById("group-name");
     try {
         if (!token) {
             alert("You are not logged in!");
             document.location.href = "../Login/login.html";
         }
-        else {
+        else {         
+            const groupNameElement = document.getElementById("group-name");
             const li = document.createElement("li");
-            li.innerHTML = `<a class="active" >${groupName}</a>`;
+            li.innerHTML = `<a class="active" href="../SingleGroup/singlegroup.html">${groupName}</a>`;
             navBar.appendChild(li);
-            editGroupSettings(navBar);
             groupNameElement.textContent = groupName;
-            fetchAllMessages();
-            setInterval(fetchAllMessages, 1000);
-        }
-    }
-    catch (err) {
+
+           
+    }  }  catch (err) {
         console.error(err);
     }
 });
@@ -83,7 +129,7 @@ async function showOptions(userId) {
 
 async function deleteUser(userId) {
     try {
-        await axios.delete(`http://3.110.172.188:3000/delete-member/${groupId}/${userId}`, { headers: { "Authorization": token } });
+        await axios.delete(`http://localhost:3000/delete-member/${groupId}/${userId}`, { headers: { "Authorization": token } });
         document.location.reload();
     } catch (err) {
         alert(err.response.data.error);
@@ -92,41 +138,10 @@ async function deleteUser(userId) {
 
 async function makeAdmin(userId) {
     try {
-        await axios.put(`http://3.110.172.188:3000/make-admin/${groupId}/${userId}`, {}, { headers: { "Authorization": token } });
+        await axios.put(`http://localhost:3000/make-admin/${groupId}/${userId}`, {}, { headers: { "Authorization": token } });
         document.location.reload();
     } catch (err) {
         alert(err.response.data.error);
-    }
-}
-
-async function editGroupSettings(navBar) {
-    const membersResponse = await axios.get(`http://3.110.172.188:3000/get-all-members/${groupId}`, { headers: { "Authorization": token } });
-    if (membersResponse.data.admin) {
-        const button = document.createElement("button");
-        button.textContent = "Edit Group Settings";
-        button.type = "button";
-        button.id = "edit-group-settings";
-        button.onclick = () => {
-            document.getElementById("editGroupDialog").classList.add("active");
-            const form = document.getElementById("editGroupForm");
-            const groupName = document.getElementById("groupName");
-            const allMembers = document.getElementById("allMembers");
-            groupName.value = localStorage.getItem("groupName");
-            allMembers.value = membersResponse.data.emails;
-            form.addEventListener("submit", async (e) => {
-                e.preventDefault();
-                const newGroupName = e.target.groupName.value;
-                const newMembers = e.target.allMembers.value.split(",");
-                try {
-                    await axios.put(`http://3.110.172.188:3000/edit-group/${groupId}`, { name: newGroupName, members: newMembers }, { headers: { "Authorization": token } });
-                    localStorage.setItem("groupName", newGroupName);  // Update local storage with new group name
-                    window.location.href = "singlegroup.html";
-                } catch (err) {
-                    alert(err.response.data.error);
-                }
-            });
-        }
-        navBar.appendChild(button);
     }
 }
 
@@ -140,7 +155,7 @@ document.getElementById("cancel").addEventListener("click", () => {
 
 document.getElementById("delete-group").addEventListener("click", async () => {
     try {
-        await axios.delete(`http://3.110.172.188:3000/delete-group/${groupId}`, { headers: { "Authorization": token } });
+        await axios.delete(`http://localhost:3000/delete-group/${groupId}`, { headers: { "Authorization": token } });
         window.location.href = "../group/groups.html";
     } catch (err) {
         alert(err.response.data.error);
