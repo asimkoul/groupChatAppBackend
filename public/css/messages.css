@@ -264,3 +264,6 @@ nav ul {
     max-width :20rem;
     max-height:50rem;
   }
+  #image-input{
+    margin: 5px;
+  }

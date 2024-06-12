@@ -6,12 +6,13 @@ const cors=require('cors')
 const bodyParser=require('body-parser')
 const socket = require("socket.io");
 const http = require("http");
+
 const app=express()
 const server = http.createServer(app);
 const io = socket(server);
 
 const sequelize=require('./util/database')
-
+const upload = require("./routes/upload");
 const userRoutes=require('./routes/user')
 const groups = require("./routes/group");
 
@@ -31,6 +32,7 @@ app.use(cors({
 }));
 
 app.use('/user',userRoutes)
+app.use(upload);
 app.use(groups)
 app.use((req,res)=>{
     res.sendFile(path.join(__dirname,`public/${req.url}`))

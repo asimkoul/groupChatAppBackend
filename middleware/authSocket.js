@@ -10,7 +10,6 @@ const authenticateSocket = async (socket, next) => {
         }
         const decoded = jwt.verify(token, 'secretkey');
         const user = await User.findByPk(decoded.userId);
-        console.log(user);
         if (!user) {
             throw new Error("Invalid token");
         }
