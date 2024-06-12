@@ -51,7 +51,7 @@ async function uploadImage(file) {
 
 socket.on("not-member", () => {
     alert("You are not part of this group!");
-    window.location.href = "/";
+    window.location.href = "../group/groups.html";
 });
 
 socket.on("auth-error", () => {

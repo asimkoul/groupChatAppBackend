@@ -267,3 +267,7 @@ nav ul {
   #image-input{
     margin: 5px;
   }
+  .message-image{
+    max-width :20rem;
+    max-height:50rem;
+  }

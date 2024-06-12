@@ -6,12 +6,14 @@ const cors=require('cors')
 const bodyParser=require('body-parser')
 const socket = require("socket.io");
 const http = require("http");
+const cron = require('cron');
 
 const app=express()
 const server = http.createServer(app);
 const io = socket(server);
 
 const sequelize=require('./util/database')
+const  archiveOldMessages = require("./util/cron")
 const upload = require("./routes/upload");
 const userRoutes=require('./routes/user')
 const groups = require("./routes/group");
@@ -53,6 +55,9 @@ sequelize.sync()
     server.listen(3000,()=>{
         console.log('server started')
     })
+    const job = new cron.CronJob('0 0 * * *', archiveOldMessages, null, false, 'Asia/Kolkata');
+    job.start();
+
     io.on("connection", async (socket) => {
         socket.on("message", (message) => {
             authenticateSocket(socket, (err) => {
