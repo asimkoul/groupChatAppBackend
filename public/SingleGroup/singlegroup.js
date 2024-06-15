@@ -37,7 +37,7 @@ async function uploadImage(file) {
     try {
         const formData = new FormData();
         formData.append('image', file);
-        const response = await axios.post('http://localhost:3000/upload-image', formData, {
+        const response = await axios.post('http://3.110.172.188:3000/upload-image', formData, {
             headers: { "Authorization": token, "Content-Type": "multipart/form-data" }
         });
         const imageUrl = response.data.imageUrl;
@@ -85,7 +85,7 @@ socket.on("group-members", (idAndNames, admin, emails) => {
                     const newGroupName = e.target.groupName.value;
                     const newMembers = e.target.allMembers.value.split(",");
                     try {
-                        await axios.put(`http://localhost:3000/edit-group/${groupId}`, { name: newGroupName, members: newMembers }, { headers: { "Authorization": token } });
+                        await axios.put(`http://3.110.172.188:3000/edit-group/${groupId}`, { name: newGroupName, members: newMembers }, { headers: { "Authorization": token } });
                         localStorage.setItem("groupName", newGroupName); 
                         window.location.href = "singlegroup.html";
                     } catch (err) {
@@ -159,7 +159,7 @@ async function showOptions(userId) {
 
 async function deleteUser(userId) {
     try {
-        await axios.delete(`http://localhost:3000/delete-member/${groupId}/${userId}`, { headers: { "Authorization": token } });
+        await axios.delete(`http://3.110.172.188:3000/delete-member/${groupId}/${userId}`, { headers: { "Authorization": token } });
         document.location.reload();
     } catch (err) {
         alert(err.response.data.error);
@@ -168,7 +168,7 @@ async function deleteUser(userId) {
 
 async function makeAdmin(userId) {
     try {
-        await axios.put(`http://localhost:3000/make-admin/${groupId}/${userId}`, {}, { headers: { "Authorization": token } });
+        await axios.put(`http://3.110.172.188:3000/make-admin/${groupId}/${userId}`, {}, { headers: { "Authorization": token } });
         document.location.reload();
     } catch (err) {
         alert(err.response.data.error);
@@ -185,7 +185,7 @@ document.getElementById("cancel").addEventListener("click", () => {
 
 document.getElementById("delete-group").addEventListener("click", async () => {
     try {
-        await axios.delete(`http://localhost:3000/delete-group/${groupId}`, { headers: { "Authorization": token } });
+        await axios.delete(`http://3.110.172.188:3000/delete-group/${groupId}`, { headers: { "Authorization": token } });
         window.location.href = "../group/groups.html";
     } catch (err) {
         alert(err.response.data.error);
